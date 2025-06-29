@@ -1,11 +1,11 @@
 import socket
 import threading
 
-estoque = {"maçã": 10, "banana": 15}
+estoque = {"laranja": 10, "banana": 15, "alface" : 7}
 
 def servidor():
     s = socket.socket()
-    s.bind(("localhost", 8000))
+    s.bind(("localhost", 8000)) # Origem : Primeiro vendedor, Peer 1
     s.listen(1)
     conn, _ = s.accept()
     while True:
@@ -26,7 +26,7 @@ def cliente():
     c = socket.socket()
     while True:
         try:
-            c.connect(("localhost", 8001))  # ou 8000 no peer2.py
+            c.connect(("localhost", 8001))  # Destino: Segundo vendedor, Peer 2
             break
         except ConnectionRefusedError:
             time.sleep(1)  # espera 1 segundo e tenta de novo

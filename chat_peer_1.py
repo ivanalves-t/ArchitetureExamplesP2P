@@ -2,10 +2,10 @@ import socket
 import threading
 import time
 
-NOME = "Peer1"
+NOME = "Peer1" # Remetente Peer 1
 MEU_IP = "localhost"
-MINHA_PORTA = 6000
-PORTA_PEER = 6001
+MINHA_PORTA = 6000 
+PORTA_PEER = 6001 # Destinatário Peer 2
 
 def servidor():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
