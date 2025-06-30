@@ -1,42 +1,50 @@
 import socket
 import threading
 
-estoque = {"banana": 5, "pera": 8, "manga" : 9}
+nome = "Peer2"
+estoque = {
+    "maçã": 7,
+    "banana": 0,
+    "pera": 12
+}
 
+print(f"\n{nome} - Estoque local:")
+for produto, qtd in estoque.items():
+    print(f"  - {produto}: {qtd} unidades")
+
+# === Servidor: escuta consultas ===
 def servidor():
     s = socket.socket()
-    s.bind(("localhost", 8001)) # Origem : Segundo vendedor, Peer 2
+    s.bind(("localhost", 7001))
     s.listen(1)
     conn, _ = s.accept()
     while True:
-        msg = conn.recv(1024).decode()
-        if not msg: break
-        print("Peer1 pediu:", msg)
-        if msg.startswith("consultar"):
-            produto = msg.split()[1]
-            qtd = estoque.get(produto, 0)
-            conn.send(f"{produto}: {qtd}".encode())
-        elif msg == "sair":
-            break
-    conn.close()
+        msg = conn.recv(1024).decode().strip()
+        if not msg:
+            continue
+        print(f"\nRecebido de outro peer: {msg}")
+        qtd = estoque.get(msg, 0)
+        resposta = f"{nome} responde: {msg} = {qtd}"
+        conn.send(resposta.encode())
 
-import time
-
+# === Cliente: envia consultas ===
 def cliente():
     c = socket.socket()
     while True:
         try:
-            c.connect(("localhost", 8000))  # Destino : Primeiro Vendedor, Peer 1
+            c.connect(("localhost", 7000))
             break
-        except ConnectionRefusedError:
-            time.sleep(1)  # espera 1 segundo e tenta de novo
-    while True:
-        msg = input("Você (peer2): ")
-        c.send(msg.encode())
-        if msg == "sair": break
-        resposta = c.recv(1024).decode()
-        print("Resposta:", resposta)
-    c.close()
+        except:
+            pass  # tenta até conseguir conectar
 
+    while True:
+        produto = input("\nDigite o nome do produto: ").strip()
+        if produto.lower() == "sair":
+            break
+        c.send(produto.encode())
+        resposta = c.recv(1024).decode()
+        print(resposta)
+
+# Inicia as duas threads
 threading.Thread(target=servidor, daemon=True).start()
 cliente()
