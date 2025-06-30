@@ -38,6 +38,5 @@ def cliente():
         print("Resposta:", resposta)
     c.close()
 
-
 threading.Thread(target=servidor, daemon=True).start()
 cliente()
